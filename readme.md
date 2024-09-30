@@ -12,6 +12,7 @@ pip install -r requirements.txt
 
 > 카메라에서 960 x 640 해상도의 MJPEG 영상을 받아와 HTTP 스트림으로 제공.
 > 선택적인 쿼리 파람으로 `timeout=N`을 제공하면 N초 만큼 촬영 후 종료.
+> HTML의 경우 `<img src="/preview" width="640" height="480">` 등으로 렌더링할 수 있음.
 
 MIME Type: `multipat/x-mixed-replace `
 
@@ -29,7 +30,7 @@ Content-Type: image/jpeg
 
 <jpeg data here>
 ```
-> HTML의 경우 `<img src="/preview" width="640" height="480">` 등으로 렌더링할 수 있음.
+<br>
 
 ### GET `/photo`
 
@@ -45,10 +46,12 @@ Content-Type: image/jpeg
 
 <jpeg data here>
 ```
+<br>
 
 ### GET `/reset`
 
 > 카메라 상태를 초기화. 카메라 상태로 인한 촬영 오류 시에 유용할 수 있음.
+<br>
 
 ### GET `/cmd`
 
