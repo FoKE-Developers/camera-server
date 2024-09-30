@@ -1,13 +1,14 @@
-import os, subprocess
+import subprocess
 
-# Each frame is about 180 KB
+# Each preview frame is about 180 KB
 READ_SIZE = 100 * 1024
 SOI = b'\xff\xd8'
 EOI = b'\xff\xd9'
 
 # Kill existing gphoto2 processes to properly detect camera
 def reset():
-    os.system("pkill gphoto2")
+    command = ['pkill', 'gphoto2']
+    subprocess.run(command)
 
 def command(arg):
     command = ['gphoto2', arg]
