@@ -48,7 +48,7 @@ Content-Type: image/jpeg
 ```
 <br>
 
-### GET `/photo`
+### GET `/capture`
 
 > 카메라에서 2592 x 1728 해상도의 JPEG 사진을 즉시 촬영하여 전송.
 > 초점을 맞추고 셔터 소리가 날 때까지 약 2초의 딜레이가 있음.
@@ -85,7 +85,7 @@ Camera has been reset.
 
 MIME Type: text/plain
 
-Parameter: 요청 시 `?arg=` 뒤에 `gphoto2` 커맨드와 호환되는 1개의 인자
+Parameter: 요청 시 `?arg=` 뒤에 `gphoto2` 커맨드와 호환되는 1개의 인자를 제공해야함.
 
 Response Example: `/cmd?arg=--auto-detect`
 ```

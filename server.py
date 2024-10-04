@@ -18,8 +18,8 @@ def preview():
     return Response(generate_stream(request.args.get('timeout')),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
-@app.route('/photo', methods=["GET"])
-def photo():
+@app.route('/capture', methods=["GET"])
+def capture():
     return Response(camera.capture_image(), mimetype='image/jpeg')
 
 @app.route('/reset', methods=["GET"])
