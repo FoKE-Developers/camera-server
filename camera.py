@@ -31,9 +31,16 @@ class MjpegVideo:
             command[1] += f'={timeout}s'
         self.process = subprocess.Popen(command, stdout=subprocess.PIPE,
                                         stderr=subprocess.PIPE, bufsize=10**8)
-        err = self.process.stderr.read().decode('utf-8')
-        if err:
-            raise IOError(err)
+        try:
+            # collect errors occurred within 1 second
+            out, err = self.process.communicate(timeout=1)
+            if err:
+                raise IOError(err.decode('utf-8'))
+            if out:
+                raise Warning(out.decode('utf-8'))
+        except subprocess.TimeoutExpired:
+            # this implies video capture has started
+            pass
         self.buf = b''
 
     def get_frame(self):

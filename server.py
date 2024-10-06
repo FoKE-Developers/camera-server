@@ -1,6 +1,6 @@
 #!/bin/python
 
-from flask import Flask, Response, render_template, request, abort
+from flask import Flask, Response, render_template, request
 import camera
 
 app = Flask(__name__)
@@ -19,7 +19,10 @@ def preview():
     try:
         video = camera.MjpegVideo(request.args.get('timeout'))
     except IOError as err:
-        abort(503, err)
+        return Response(str(err), 503, mimetype='text/plain')
+    except Warning as out:
+        return Response(str(out), 504, mimetype='text/plain')
+
     return Response(generate_stream(video),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
