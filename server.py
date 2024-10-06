@@ -12,6 +12,8 @@ def generate_stream(timeout):
         if frame:
             yield (b'--frame\r\n'
                 b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+        else:
+            return 0
 
 @app.route('/preview', methods=["GET"])
 def preview():
