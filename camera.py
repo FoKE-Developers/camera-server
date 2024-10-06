@@ -23,7 +23,7 @@ def capture_image():
     if result.returncode == 0:
         return result.stdout;
 
-class MjpegStream:
+class MjpegVideo:
     def __init__(self, timeout=None):
         # Start capturing video from gphoto2 and send it over pipe
         command = ['gphoto2', '--capture-movie', '--stdout']
@@ -31,6 +31,9 @@ class MjpegStream:
             command[1] += f'={timeout}s'
         self.process = subprocess.Popen(command, stdout=subprocess.PIPE,
                                         stderr=subprocess.PIPE, bufsize=10**8)
+        err = self.process.stderr.read().decode('utf-8')
+        if err:
+            raise IOError(err)
         self.buf = b''
 
     def get_frame(self):
@@ -38,9 +41,6 @@ class MjpegStream:
             # Read in larger chunks to avoid too many reads, but ensure full frames
             chunk = self.process.stdout.read(READ_SIZE)
             if not chunk:
-                error = self.process.stderr.read().decode('utf-8')
-                if error:
-                    raise IOError(error)
                 break
             self.buf += chunk
 

@@ -1,14 +1,13 @@
 #!/bin/python
 
-from flask import Flask, Response, render_template, request
+from flask import Flask, Response, render_template, request, abort
 import camera
 
 app = Flask(__name__)
 
-def generate_stream(timeout):
-    mjpg = camera.MjpegStream(timeout)
+def generate_stream(video):
     while True:
-        frame = mjpg.get_frame()
+        frame = video.get_frame()
         if frame:
             yield (b'--frame\r\n'
                 b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
@@ -17,7 +16,11 @@ def generate_stream(timeout):
 
 @app.route('/preview', methods=["GET"])
 def preview():
-    return Response(generate_stream(request.args.get('timeout')),
+    try:
+        video = camera.MjpegVideo(request.args.get('timeout'))
+    except IOError as err:
+        abort(503, err)
+    return Response(generate_stream(video),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @app.route('/capture', methods=["GET"])
