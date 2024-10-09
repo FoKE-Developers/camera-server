@@ -7,6 +7,12 @@ sudo apt install gphoto2
 pip install -r requirements.txt
 ```
 
+SSL 적용
+```sh
+cd cert
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout selfsigned.key -out selfsigned.crt
+```
+
 ## 실행
 
 ```
