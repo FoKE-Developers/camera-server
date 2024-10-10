@@ -17,7 +17,7 @@ def command(arg):
         return result.stdout.decode('utf-8');
 
 def capture_image():
-    reset() # NOTE: this may interrupt movie capture
+    MjpegVideo.stop()
     command = ['gphoto2', '--capture-image-and-download', '--stdout']
     result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if result.returncode == 0:
@@ -27,15 +27,19 @@ def capture_image():
 
 class MjpegVideo:
     process = None
+    @staticmethod
+    def stop():
+        if MjpegVideo.process:
+            MjpegVideo.process.terminate()
+            MjpegVideo.process.wait()
+            MjpegVideo.process = None
+
     def __init__(self, timeout=None):
         # Start capturing video from gphoto2 and send it over pipe
         command = ['gphoto2', '--capture-movie', '--stdout']
         if timeout:
             command[1] += f'={timeout}s'
-        if MjpegVideo.process:
-            MjpegVideo.process.terminate()
-            MjpegVideo.process.wait()
-            MjpegVideo.process = None
+        MjpegVideo.stop()
         self.process = subprocess.Popen(command, stdout=subprocess.PIPE,
                                         stderr=subprocess.PIPE, bufsize=10**8)
         try:
