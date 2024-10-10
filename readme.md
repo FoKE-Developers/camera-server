@@ -7,6 +7,10 @@ sudo apt install gphoto2
 pip install -r requirements.txt
 ```
 
+## 테스트 된 환경
+- Raspberry Pi 1 B & EOS 700D
+- Raspberry Pi 1 B & EOS R8
+
 ## 실행
 
 ```
