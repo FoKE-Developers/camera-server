@@ -35,24 +35,26 @@ class MjpegVideo:
         if MjpegVideo.process:
             MjpegVideo.process.terminate()
             MjpegVideo.process.wait()
-        MjpegVideo.process = subprocess.Popen(command, stdout=subprocess.PIPE,
-                                              stderr=subprocess.PIPE, bufsize=10**8)
+            MjpegVideo.process = None
+        self.process = subprocess.Popen(command, stdout=subprocess.PIPE,
+                                        stderr=subprocess.PIPE, bufsize=10**8)
         try:
             # collect errors occurred within 1 second
-            out, err = MjpegVideo.process.communicate(timeout=1)
+            out, err = self.process.communicate(timeout=1)
             if err:
                 raise IOError(err.decode('utf-8'))
             if out:
                 raise Warning(out.decode('utf-8'))
         except subprocess.TimeoutExpired:
             # this implies video capture has started
+            MjpegVideo.process = self.process
             pass
         self.buf = b''
 
     def get_frame(self):
-        while True:
+        while not self.process.stdout.closed:
             # Read in larger chunks to avoid too many reads, but ensure full frames
-            chunk = MjpegVideo.process.stdout.read(READ_SIZE)
+            chunk = self.process.stdout.read(READ_SIZE)
             if not chunk:
                 break
             self.buf += chunk
@@ -68,6 +70,6 @@ class MjpegVideo:
                 return frame
 
     def __del__(self):
-        MjpegVideo.process.terminate()
-        MjpegVideo.process.wait()
+        self.process.terminate()
+        self.process.wait()
 
