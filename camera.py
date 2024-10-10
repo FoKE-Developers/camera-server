@@ -7,7 +7,7 @@ EOI = b'\xff\xd9'
 
 # Kill existing gphoto2 processes to properly detect camera
 def reset():
-    command = ['pkill', 'gphoto2']
+    command = ['pkill', '-9', 'gphoto2']
     subprocess.run(command)
 
 def command(arg):
@@ -19,21 +19,27 @@ def command(arg):
 def capture_image():
     reset() # NOTE: this may interrupt movie capture
     command = ['gphoto2', '--capture-image-and-download', '--stdout']
-    result = subprocess.run(command, stdout=subprocess.PIPE)
+    result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if result.returncode == 0:
         return result.stdout;
+    else:
+        raise IOError(result.stderr.decode('utf-8'))
 
 class MjpegVideo:
+    process = None
     def __init__(self, timeout=None):
         # Start capturing video from gphoto2 and send it over pipe
         command = ['gphoto2', '--capture-movie', '--stdout']
         if timeout:
             command[1] += f'={timeout}s'
-        self.process = subprocess.Popen(command, stdout=subprocess.PIPE,
-                                        stderr=subprocess.PIPE, bufsize=10**8)
+        if MjpegVideo.process:
+            MjpegVideo.process.terminate()
+            MjpegVideo.process.wait()
+        MjpegVideo.process = subprocess.Popen(command, stdout=subprocess.PIPE,
+                                              stderr=subprocess.PIPE, bufsize=10**8)
         try:
             # collect errors occurred within 1 second
-            out, err = self.process.communicate(timeout=1)
+            out, err = MjpegVideo.process.communicate(timeout=1)
             if err:
                 raise IOError(err.decode('utf-8'))
             if out:
@@ -46,7 +52,7 @@ class MjpegVideo:
     def get_frame(self):
         while True:
             # Read in larger chunks to avoid too many reads, but ensure full frames
-            chunk = self.process.stdout.read(READ_SIZE)
+            chunk = MjpegVideo.process.stdout.read(READ_SIZE)
             if not chunk:
                 break
             self.buf += chunk
@@ -62,6 +68,6 @@ class MjpegVideo:
                 return frame
 
     def __del__(self):
-        self.process.terminate()
-        self.process.wait()
+        MjpegVideo.process.terminate()
+        MjpegVideo.process.wait()
 

@@ -4,6 +4,7 @@ from flask import Flask, Response, render_template, request
 import camera
 
 app = Flask(__name__)
+camera.reset()
 
 def generate_stream(video):
     while True:
@@ -28,7 +29,10 @@ def preview():
 
 @app.route('/capture', methods=["GET"])
 def capture():
-    return Response(camera.capture_image(), mimetype='image/jpeg')
+    try:
+        return Response(camera.capture_image(), mimetype='image/jpeg')
+    except IOError as err:
+        return Response(str(err), 503, mimetype='text/plain')
 
 @app.route('/reset', methods=["GET"])
 def reset():
