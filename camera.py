@@ -7,7 +7,7 @@ EOI = b'\xff\xd9'
 
 # Kill existing gphoto2 processes to properly detect camera
 def reset():
-    command = ['pkill', '-9', 'gphoto2']
+    command = ['pkill', '-9', '-f', 'gphoto2']
     subprocess.run(command)
 
 def command(arg):
