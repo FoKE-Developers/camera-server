@@ -1,6 +1,6 @@
 #!/bin/python
 
-from flask import Flask, Response, render_template, request
+from flask import Flask, Response, render_template, send_file, request
 import camera
 
 app = Flask(__name__)
@@ -34,6 +34,13 @@ def capture():
     except IOError as err:
         return Response(str(err), 503, mimetype='text/plain')
 
+@app.route('/capture/latest', methods=["GET"])
+def latest_capture():
+    try:
+        return send_file(camera.LATEST_IMAGE, mimetype='image/jpeg')
+    except IOError as err:
+        return Response(str(err), 503, mimetype='text/plain')
+
 @app.route('/reset', methods=["GET"])
 def reset():
     camera.reset()
@@ -49,5 +56,5 @@ def index():
     return render_template('index.html')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=8080)
 
