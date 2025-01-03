@@ -1,5 +1,7 @@
 import subprocess
 
+LATEST_IMAGE = 'latest.jpg'
+
 # Each preview frame is about 180 KB
 READ_SIZE = 100 * 1024
 SOI = b'\xff\xd8'
@@ -7,8 +9,8 @@ EOI = b'\xff\xd9'
 
 # Kill existing gphoto2 processes to properly detect camera
 def reset():
-    command = ['pkill', '-9', '-f', 'gphoto2']
-    subprocess.run(command)
+    subprocess.run(['pkill', '-9', '-f', 'gphoto2'])
+    subprocess.run(['rm', LATEST_IMAGE])
 
 def command(arg):
     command = ['gphoto2', arg]
@@ -21,6 +23,7 @@ def capture_image():
     command = ['gphoto2', '--capture-image-and-download', '--stdout']
     result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if result.returncode == 0:
+        subprocess.run(['tee', LATEST_IMAGE], input=result.stdout)
         return result.stdout;
     else:
         raise IOError(result.stderr.decode('utf-8'))

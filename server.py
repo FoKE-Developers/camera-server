@@ -1,6 +1,6 @@
 #!/bin/python
 
-from flask import Flask, Response, render_template, request
+from flask import Flask, Response, render_template, send_file, request
 import camera
 
 app = Flask(__name__)
@@ -31,6 +31,13 @@ def preview():
 def capture():
     try:
         return Response(camera.capture_image(), mimetype='image/jpeg')
+    except IOError as err:
+        return Response(str(err), 503, mimetype='text/plain')
+
+@app.route('/capture/latest', methods=["GET"])
+def latest_capture():
+    try:
+        return send_file(camera.LATEST_IMAGE, mimetype='image/jpeg')
     except IOError as err:
         return Response(str(err), 503, mimetype='text/plain')
 
