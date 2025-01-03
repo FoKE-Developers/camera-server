@@ -19,11 +19,7 @@ pip install -r requirements.txt
 python /path/to/repo/server.py
 ```
 
-시스템 시작과 동시에 실행을 원하는 경우 `/etc/rc.local`에 다음과 같이 넣어놓는 것을 권장.
-
-<img width="563" alt="image" src="https://github.com/user-attachments/assets/2eed9bc6-eb9f-4bed-bef3-ac28ac55ddb0">
-
-(`&> /path/to/repo/log.txt` 는 log.txt 파일에 실행 로그를 저장하는 역할)
+시스템 시작과 동시에 실행을 원하는 경우, 다음 wiki 문서를 참고: https://github.com/FoKE-Developers/camera-server/wiki
 
 ## API
 
